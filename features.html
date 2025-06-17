@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fonctionnalités - GesteEcole</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <link rel="stylesheet" href="../assets/css/styles.css">
+     <link rel="stylesheet" href="../assets/css/commun.css">
+  <style>
+
+    .feature-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      height: 100%;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+      border: none;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .feature-icon {
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      margin: -40px auto 20px;
+      font-size: 2rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .feature-card:nth-child(1) .feature-icon {
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      color: #d63031;
+    }
+    
+    .feature-card:nth-child(2) .feature-icon {
+      background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+      color: #0984e3;
+    }
+    
+    .feature-card:nth-child(3) .feature-icon {
+      background: linear-gradient(135deg, #d4fc79, #96e6a1);
+      color: #00b894;
+    }
+    
+    .feature-card:nth-child(4) .feature-icon {
+      background: linear-gradient(135deg, #fccb90, #d57eeb);
+      color: #e84393;
+    }
+    
+    .feature-list li {
+      padding: 8px 0;
+      position: relative;
+      padding-left: 28px;
+    }
+    
+    .feature-list li::before {
+      content: "\f00c";
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      position: absolute;
+      left: 0;
+      top: 10px;
+      color: var(--secondary);
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+    
+    footer {
+      background: linear-gradient(135deg, var(--primary), #1a4b8f);
+      color: white;
+      padding: 3rem 0 1.5rem;
+      position: relative;
+    }
+    
+    footer::before {
+      content: "";
+      position: absolute;
+      top: -40px;
+      left: 0;
+      width: 100%;
+      height: 40px;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23f0f7ff" d="M0,128L48,112C96,96,192,64,288,80C384,96,480,160,576,165.3C672,171,768,117,864,85.3C960,53,1056,43,1152,48C1248,53,1344,75,1392,85.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .social-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      transition: all 0.3s ease;
+      margin: 0 5px;
+    }
+    
+    .social-icon:hover {
+      background: white;
+      color: var(--primary);
+      transform: translateY(-5px);
+    }
+    
+    .section-title {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 3rem;
+    }
+    
+    .section-title::after {
+      content: "";
+      position: absolute;
+      width: 60%;
+      height: 4px;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      bottom: -10px;
+      left: 20%;
+      border-radius: 10px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      padding: 10px 25px;
+      border-radius: 30px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(44, 111, 187, 0.3);
+    }
+    
+    @media (max-width: 768px) {
+      header {
+        padding: 4rem 0 !important;
+      }
+      
+      .section-title {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+    <div id="dynamic-background">
+    <!-- Les éléments flottants seront générés par JavaScript -->
+  </div>
+  
+  <nav class="navbar navbar-expand-lg shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold text-primary cyber-text" href="index.html">Gest-Ecole</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link active cyber-text" href="index.html">Accueil</a></li>
+          <li class="nav-item"><a class="nav-link cyber-text" href="features.html">Fonctionnalités</a></li>
+          <li class="nav-item"><a class="nav-link cyber-text" href="contact.html">Équipe & Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <header class="text-white text-center py-5">
+    <div class="container position-relative">
+      <h1 class="display-4 fw-bold mb-3">Fonctionnalités de GesteEcole</h1>
+      <p class="lead mb-4">Découvrez tout ce que notre plateforme peut faire pour transformer la gestion de votre établissement</p>
+      <div class="d-flex justify-content-center gap-2">
+        <a href="#features" class="btn btn-light btn-lg rounded-pill px-4">Explorer</a>
+        <a href="contact.html" class="btn btn-outline-light btn-lg rounded-pill px-4">Contactez-nous</a>
+      </div>
+    </div>
+  </header>
+  
+  <section id="stats" class="py-5">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-number">0%</div>
+            <p>Établissements satisfaits</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-number">0</div>
+            <p>Établissements utilisateurs</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-number">0</div>
+            <p>Élèves gérés</p>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="stat-card">
+            <div class="stat-number">24/7</div>
+            <p>Support technique</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="features" class="py-5 section-bg">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold section-title">Nos Fonctionnalités Clés</h2>
+        <p class="text-muted">Une solution complète pour une gestion scolaire optimisée</p>
+      </div>
+      
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-user-graduate"></i>
+            </div>
+            <div class="card-body text-center px-4 py-3">
+              <h3 class="h4 mb-3">Gestion des élèves</h3>
+              <ul class="feature-list text-start">
+                <li>Inscription et archivage numérique</li>
+                <li>Suivi académique complet</li>
+                <li>Historique des performances</li>
+                <li>Gestion des absences et retards</li>
+                <li>Bulletins de notes détaillés</li>
+                <li>Fiche élève avec informations médicales</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-6">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <div class="card-body text-center px-4 py-3">
+              <h3 class="h4 mb-3">Gestion des enseignants</h3>
+              <ul class="feature-list text-start">
+                <li>Fiches enseignants détaillées</li>
+                <li>Attribution des matières</li>
+                <li>Gestion des emplois du temps</li>
+                <li>Suivi des performances pédagogiques</li>
+                <li>Communication centralisée</li>
+                <li>Planification des réunions</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-6">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-file-invoice"></i>
+            </div>
+            <div class="card-body text-center px-4 py-3">
+              <h3 class="h4 mb-3">Gestion administrative</h3>
+              <ul class="feature-list text-start">
+                <li>Gestion des classes et sections</li>
+                <li>Programmation des périodes scolaires</li>
+                <li>Gestion des matières et programmes</li>
+                <li>Calendrier académique interactif</li>
+                <li>Suivi des ressources pédagogiques</li>
+                <li>Archivage des documents officiels</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-6">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="card-body text-center px-4 py-3">
+              <h3 class="h4 mb-3">Outils avancés</h3>
+              <ul class="feature-list text-start">
+                <li>Export de données (Excel, PDF)</li>
+                <li>Tableaux de bord statistiques</li>
+                <li>Rapports personnalisables</li>
+                <li>Notifications SMS et email</li>
+                <li>Application mobile intégrée</li>
+                <li>Portail parents en ligne</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="py-5 bg-light">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+          <div class="p-4 p-lg-5 bg-white rounded-3 shadow-sm">
+            <h2 class="mb-4">Pourquoi choisir GesteEcole ?</h2>
+            <div class="d-flex mb-3">
+              <div class="me-3 text-primary">
+                <i class="fas fa-check-circle fa-2x"></i>
+              </div>
+              <div>
+                <h5>Solution tout-en-un</h5>
+                <p class="mb-0">Toutes les fonctionnalités dont vous avez besoin dans une seule plateforme intégrée.</p>
+              </div>
+            </div>
+            <div class="d-flex mb-3">
+              <div class="me-3 text-primary">
+                <i class="fas fa-lock fa-2x"></i>
+              </div>
+              <div>
+                <h5>Sécurité des données</h5>
+                <p class="mb-0">Protection des données avec chiffrement de niveau bancaire et sauvegardes quotidiennes.</p>
+              </div>
+            </div>
+            <div class="d-flex mb-3">
+              <div class="me-3 text-primary">
+                <i class="fas fa-mobile-alt fa-2x"></i>
+              </div>
+              <div>
+                <h5>Accessibilité totale</h5>
+                <p class="mb-0">Accédez à votre établissement depuis n'importe quel appareil, à tout moment.</p>
+              </div>
+            </div>
+            <div class="d-flex">
+              <div class="me-3 text-primary">
+                <i class="fas fa-headset fa-2x"></i>
+              </div>
+              <div>
+                <h5>Support premium</h5>
+                <p class="mb-0">Notre équipe dédiée vous accompagne à chaque étape de votre projet.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="p-4 p-lg-5 bg-primary text-white rounded-3 shadow-sm">
+            <h2 class="mb-4">Prêt à transformer votre établissement ?</h2>
+            <p class="mb-4">Découvrez comment GesteEcole peut simplifier votre gestion quotidienne et améliorer l'expérience de tous les acteurs de votre établissement.</p>
+            <div class="d-grid gap-3">
+              <a href="contact.html" class="btn btn-light btn-lg rounded-pill">Demander une démo</a>
+              <a href="contact.html" class="btn btn-outline-light btn-lg rounded-pill">Contacter notre équipe</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-4 mb-md-0">
+          <h4 class="mb-4 text-white">GesteEcole</h4>
+          <p class="text-white-50">La solution tout-en-un pour une gestion scolaire moderne et efficace.</p>
+          <div class="mt-4">
+            <a href="#" class="social-icon bg-white text-primary"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-icon bg-white text-primary"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-icon bg-white text-primary"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="social-icon bg-white text-primary"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4 mb-md-0">
+          <h4 class="mb-4 text-white">Liens rapides</h4>
+          <ul class="list-unstyled">
+            <li class="mb-2"><a href="index.html" class="footer-link">Accueil</a></li>
+            <li class="mb-2"><a href="features.html" class="footer-link">Fonctionnalités</a></li>
+            <li class="mb-2"><a href="contact.html" class="footer-link">Équipe & Contact</a></li>
+            <li class="mb-2"><a href="#" class="footer-link">Blog</a></li>
+            <li><a href="#" class="footer-link">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h4 class="mb-4 text-white">Contact</h4>
+          <ul class="list-unstyled">
+            <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Bamako, Mali</li>
+            <li class="mb-2"><i class="fas fa-phone me-2"></i> +223 94 30 63 02 / +223 76 96 16 37 / +223 89 16 00 40</li>
+            <li class="mb-2"><i class="fas fa-envelope me-2"></i> contact@gest-ecole.com</li>
+          </ul>
+        </div>
+      </div>
+      <hr class="my-4 bg-white opacity-25">
+      <div class="text-center">
+        <p class="mb-0 text-white-50">&copy; 2025 GesteEcole. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Animation au défilement
+    document.addEventListener('DOMContentLoaded', function() {
+      const featureCards = document.querySelectorAll('.feature-card');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = 1;
+            entry.target.style.transform = 'translateY(0)';
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      featureCards.forEach(card => {
+        card.style.opacity = 0;
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(card);
+      });
+      
+      // Animation pour les cartes de statistiques
+      const statCards = document.querySelectorAll('.stat-card');
+      statCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+          card.style.transform = 'translateY(-8px)';
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = 'translateY(0)';
+        });
+      });
+    });
+  </script>
+</body>
+</html>
