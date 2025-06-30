@@ -1,16 +1,16 @@
 /**
- * Algorithme de Réception pour le Formulaire de Contact GesteEcole
+ * Algorithme de Réception pour le Formulaire de Contact GestScolaire
  * Traite les données du formulaire, valide les informations et envoie les notifications
  */
 
 class ContactReceptionAlgorithm {
     constructor() {
         this.emailConfig = {
-            adminEmail: 'contact@gest-ecole.com',
+            adminEmail: 'contact@gestscolaire.com',
             teamEmails: {
-                'Traoré Seydou Bah': 'seydou@gest-ecole.com',
-                'Maiga Boulkassoum': 'boulkassoum@gest-ecole.com',
-                'Fané Moussa': 'moussa@gest-ecole.com'
+                'Traoré Seydou Bah': 'seydou@gestscolaire.com',
+                'Maiga Boulkassoum': 'boulkassoum@gestscolaire.com',
+                'Fané Moussa': 'moussa@gestscolaire.com'
             }
         };
         
@@ -126,7 +126,7 @@ class ContactReceptionAlgorithm {
     routeMessage(data) {
         const category = this.subjectCategories[data.sujet] || 'OTHER';
         
-        let assignedTo = 'contact@gest-ecole.com';
+        let assignedTo = 'contact@gestscolaire.com';
         let priority = 'normal';
         let estimatedResponseTime = '24-48 heures';
 
