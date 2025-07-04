@@ -28,6 +28,20 @@
       75% { background-position: 50% 100%; }
       100% { background-position: 0% 50%; }
     }
+/* banner de promotion */
+    .urgency-banner {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-weight: 700;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.8; }
+    }
     
     .floating-education-elements {
       position: absolute;
