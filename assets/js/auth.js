@@ -116,13 +116,15 @@
 
             // Sauvegarder la session de vérification (temporaire)
             try {
+              const ensureDevCode = startData?.devCode || String(Math.floor(100000 + Math.random() * 900000));
               const verifySession = {
                 verifyId: startData.verifyId,
                 email,
                 emailMasked: startData?.delivery?.toMasked || email,
                 loginId: data?.id || null,
-                devCode: startData?.devCode || null,
-                createdAt: Date.now()
+                devCode: ensureDevCode,
+                createdAt: Date.now(),
+                local: !startData?.devCode // true si code généré côté client
               };
               sessionStorage.setItem('verify_session', JSON.stringify(verifySession));
             } catch (_) {}

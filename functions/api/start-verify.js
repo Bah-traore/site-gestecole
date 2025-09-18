@@ -56,14 +56,13 @@ export async function onRequestPost({ request, env }) {
       console.warn('KV put (start-verify) failed:', err);
       // Ne bloque pas la suite si KV indisponible
     }
-    // Pas d'envoi d'email: on renvoie simplement l'identifiant de vérification
-    const includeDev = String(env?.RETURN_DEV_CODE || '').toLowerCase() === 'true';
+    // Pas d'envoi d'email: on renvoie l'identifiant et le code (mode démo)
     return json({
       success: true,
       message: 'Code de vérification généré',
       verifyId,
       delivery: { channel: 'none' },
-      ...(includeDev ? { devCode: code } : {})
+      devCode: code
     });
   } catch (err) {
     return json({ success: false, message: 'Erreur serveur', error: err?.message || String(err) }, 500);
