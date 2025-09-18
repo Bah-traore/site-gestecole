@@ -29,7 +29,7 @@ export async function onRequestPost({ request, env }) {
 
     const KV = getKV(env);
 
-    // Générer un code à 6 chiffres
+    // Générer un code interne (non stocké/retourné)
     const code = generateCode();
     const now = Date.now();
     const createdAt = new Date(now).toISOString();
@@ -39,7 +39,6 @@ export async function onRequestPost({ request, env }) {
 
     const record = {
       email,
-      code,
       createdAt,
       expiresAt,
       attempts: 0,
@@ -56,13 +55,12 @@ export async function onRequestPost({ request, env }) {
       console.warn('KV put (start-verify) failed:', err);
       // Ne bloque pas la suite si KV indisponible
     }
-    // Pas d'envoi d'email: on renvoie l'identifiant et le code (mode démo)
+    // Pas d'envoi d'email: on renvoie uniquement l'identifiant (aucun code en clair)
     return json({
       success: true,
       message: 'Code de vérification généré',
       verifyId,
-      delivery: { channel: 'none' },
-      devCode: code
+      delivery: { channel: 'none' }
     });
   } catch (err) {
     return json({ success: false, message: 'Erreur serveur', error: err?.message || String(err) }, 500);

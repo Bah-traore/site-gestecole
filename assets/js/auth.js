@@ -116,15 +116,12 @@
 
             // Sauvegarder la session de vérification (temporaire)
             try {
-              const ensureDevCode = startData?.devCode || String(Math.floor(100000 + Math.random() * 900000));
               const verifySession = {
                 verifyId: startData.verifyId,
                 email,
                 emailMasked: startData?.delivery?.toMasked || email,
                 loginId: data?.id || null,
-                devCode: ensureDevCode,
-                createdAt: Date.now(),
-                local: !startData?.devCode // true si code généré côté client
+                createdAt: Date.now()
               };
               sessionStorage.setItem('verify_session', JSON.stringify(verifySession));
             } catch (_) {}
@@ -133,20 +130,16 @@
             window.location.href = 'verify.html';
           } catch (err) {
             console.warn('[Auth] /api/start-verify failed, using client fallback:', err);
-            // Fallback développement/local: on génère un code local et on passe à la page de vérification
+            // Fallback: créer une session locale minimaliste et passer à la page de vérification
             try {
-              const localCode = String(Math.floor(100000 + Math.random() * 900000));
               const verifySession = {
                 verifyId: 'local:' + Date.now(),
                 email,
                 emailMasked: email,
                 loginId: data?.id || null,
-                devCode: localCode,
-                createdAt: Date.now(),
-                local: true
+                createdAt: Date.now()
               };
               sessionStorage.setItem('verify_session', JSON.stringify(verifySession));
-              showInlineAlert(form, 'info', "Mode démo: aucun envoi de code. Un code temporaire a été généré.");
               window.location.href = 'verify.html';
               return;
             } catch (e) {

