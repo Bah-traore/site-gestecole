@@ -360,7 +360,19 @@
       width: 400px;
       height: 400px;
     }
-    
+
+    .brand-lock {
+      width: 64px;
+      height: 64px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0d6efd, #28a745);
+      color: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(13, 110, 253, 0.3);
+    }
+
     .navbar {
       background: rgba(255, 255, 255, 0.95) !important;
       backdrop-filter: blur(15px);

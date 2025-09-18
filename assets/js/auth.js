@@ -97,10 +97,41 @@
           }
           return data;
         })
-        .then((data) => {
+        .then(async (data) => {
           const ref = data?.id ? ` Référence: ${data.id}` : '';
           showInlineAlert(form, 'success', (data?.message || 'Identifiants reçus.') + ref);
           console.log('[Auth] Réponse /api/login:', data);
+
+          // Étape suivante: démarrer la vérification 2FA
+          try {
+            const startRes = await fetch('/api/start-verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, loginId: data?.id || null })
+            });
+            const startData = await startRes.json().catch(() => ({}));
+            if (!startRes.ok) {
+              throw new Error(startData?.message || 'Impossible de démarrer la vérification');
+            }
+
+            // Sauvegarder la session de vérification (temporaire)
+            try {
+              const verifySession = {
+                verifyId: startData.verifyId,
+                email,
+                emailMasked: startData?.delivery?.toMasked || email,
+                loginId: data?.id || null,
+                devCode: startData?.devCode || null,
+                createdAt: Date.now()
+              };
+              sessionStorage.setItem('verify_session', JSON.stringify(verifySession));
+            } catch (_) {}
+
+            // Redirection vers la page de vérification
+            window.location.href = 'verify.html';
+          } catch (err) {
+            showInlineAlert(form, 'danger', `Échec de l'initialisation de la vérification: ${err.message}`);
+          }
         })
         .catch((err) => {
           showInlineAlert(form, 'danger', `Échec de l\'envoi: ${err.message}`);
