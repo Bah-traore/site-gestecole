@@ -29,8 +29,6 @@ export async function onRequestPost({ request, env }) {
 
     const KV = getKV(env);
 
-    // Générer un code interne (non stocké/retourné)
-    const code = generateCode();
     const now = Date.now();
     const createdAt = new Date(now).toISOString();
     const expiresAtMs = now + 10 * 60 * 1000; // 10 minutes
@@ -99,10 +97,6 @@ function getKV(env) {
 
 function isValidEmail(email) {
   return /^([^\s@]+)@([^\s@]+)\.([^\s@]+)$/.test(email);
-}
-
-function generateCode() {
-  return String(Math.floor(100000 + Math.random() * 900000));
 }
 
 function maskEmail(email) {

