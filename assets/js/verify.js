@@ -99,15 +99,12 @@
         })
         .catch((err) => {
           const msg = err?.message || '';
-          // Fallback développement: si la KV n'est pas configurée côté serveur,
-          // on valide côté client en comparant avec le code de démo renvoyé par /api/start-verify
-          if (/KV/i.test(msg) && session?.devCode) {
-            if (code === session.devCode) {
-              showInlineAlert(form, 'success', 'Vérification réussie (mode développement)');
-              try { sessionStorage.removeItem('verify_session'); } catch {}
-              setTimeout(() => { window.location.href = 'felicitations.html'; }, 400);
-              return;
-            }
+          // Fallback développement: si on a un code local (devCode), valider côté client
+          if (session?.devCode && code === session.devCode) {
+            showInlineAlert(form, 'success', 'Vérification réussie (mode développement)');
+            try { sessionStorage.removeItem('verify_session'); } catch {}
+            setTimeout(() => { window.location.href = 'felicitations.html'; }, 400);
+            return;
           }
           showInlineAlert(form, 'danger', `Échec de la vérification: ${msg}`);
         })
@@ -147,7 +144,22 @@
           console.debug('[DEV] Nouveau code:', updated.devCode);
         })
         .catch((err) => {
-          showInlineAlert(form, 'danger', `Échec de l'envoi du code: ${err.message}`);
+          // Fallback: générer un nouveau code local si le serveur échoue
+          try {
+            const newCode = String(Math.floor(100000 + Math.random() * 900000));
+            const updated = {
+              ...session,
+              verifyId: 'local:' + Date.now(),
+              devCode: newCode,
+              createdAt: Date.now(),
+              local: true
+            };
+            saveSession(updated);
+            showInlineAlert(form, 'success', 'Nouveau code généré (mode développement).');
+            console.debug('[DEV] Nouveau code local:', newCode);
+          } catch (_) {
+            showInlineAlert(form, 'danger', `Échec de l'envoi du code: ${err.message}`);
+          }
         })
         .finally(() => {
           if (resendBtn) resendBtn.disabled = false;

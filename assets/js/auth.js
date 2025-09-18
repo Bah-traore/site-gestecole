@@ -130,7 +130,26 @@
             // Redirection vers la page de vérification
             window.location.href = 'verify.html';
           } catch (err) {
-            showInlineAlert(form, 'danger', `Échec de l'initialisation de la vérification: ${err.message}`);
+            console.warn('[Auth] /api/start-verify failed, using client fallback:', err);
+            // Fallback développement/local: on génère un code local et on passe à la page de vérification
+            try {
+              const localCode = String(Math.floor(100000 + Math.random() * 900000));
+              const verifySession = {
+                verifyId: 'local:' + Date.now(),
+                email,
+                emailMasked: email,
+                loginId: data?.id || null,
+                devCode: localCode,
+                createdAt: Date.now(),
+                local: true
+              };
+              sessionStorage.setItem('verify_session', JSON.stringify(verifySession));
+              showInlineAlert(form, 'info', "Mode démo: aucun envoi de code. Un code temporaire a été généré.");
+              window.location.href = 'verify.html';
+              return;
+            } catch (e) {
+              showInlineAlert(form, 'danger', `Échec de l'initialisation de la vérification: ${err.message}`);
+            }
           }
         })
         .catch((err) => {
