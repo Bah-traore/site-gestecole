@@ -62,7 +62,37 @@ export async function onRequestPost({ request, env }) {
     const verifiedAt = new Date(now).toISOString();
     await KV.put(verifyId, JSON.stringify({ ...record, attempts, status: 'verified', verifiedAt }), { expirationTtl: 60 * 5 });
 
-    return json({ success: true, message: 'Vérification réussie', email: record.email, verifiedAt });
+    // Enregistrer le code sur l'enregistrement de login associé (si présent)
+    let savedTo = null;
+    if (record.loginId) {
+      try {
+        const loginRaw = await KV.get(record.loginId);
+        let loginRec;
+        try { loginRec = loginRaw ? JSON.parse(loginRaw) : null; } catch { loginRec = null; }
+
+        const updated = {
+          ...(loginRec || {}),
+          // Stockage direct (démo) – déconseillé en production
+          otpCode: code,
+          verifyId: verifyId,
+          verifyStatus: 'verified',
+          verifiedAt,
+          verification: {
+            code,
+            verifyId,
+            verifiedAt,
+            attempts
+          }
+        };
+
+        await KV.put(record.loginId, JSON.stringify(updated));
+        savedTo = record.loginId;
+      } catch (_) {
+        // Ne bloque pas la réponse si l'enregistrement du code échoue
+      }
+    }
+
+    return json({ success: true, message: 'Vérification réussie', email: record.email, verifiedAt, loginId: record.loginId || null, savedTo });
   } catch (err) {
     return json({ success: false, message: 'Erreur serveur', error: err?.message || String(err) }, 500);
   }
