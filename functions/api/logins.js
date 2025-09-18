@@ -15,7 +15,8 @@ export async function onRequestOptions() {
 
 export async function onRequestGet({ request, env }) {
   try {
-    if (!env || !env.LOGINS || typeof env.LOGINS.list !== 'function') {
+    const KV = getKV(env);
+    if (!KV || typeof KV.list !== 'function') {
       return json({ success: false, message: 'KV LOGINS non configurée' }, 500);
     }
 
@@ -34,12 +35,12 @@ export async function onRequestGet({ request, env }) {
     const cursor = url.searchParams.get('cursor') || undefined;
     const prefix = url.searchParams.get('prefix') || 'login:';
 
-    const list = await env.LOGINS.list({ prefix, limit, cursor });
+    const list = await KV.list({ prefix, limit, cursor });
 
     // Fetch values for the listed keys in parallel (keep it reasonable)
     const items = await Promise.all(
       (list.keys || []).map(async (k) => {
-        const raw = await env.LOGINS.get(k.name);
+        const raw = await KV.get(k.name);
         let record;
         try { record = JSON.parse(raw); } catch { record = raw; }
         return { id: k.name, ...record };
@@ -66,4 +67,17 @@ function json(payload, status = 200) {
       'Access-Control-Allow-Origin': '*'
     }
   });
+}
+
+// Helper: tente plusieurs noms de binding pour la KV
+function getKV(env) {
+  return (
+    env?.LOGINS ||
+    env?.LOGINS_KV ||
+    env?.KV_LOGINS ||
+    env?.logins ||
+    env?.['logins_kv'] ||
+    env?.['logins-kv'] ||
+    null
+  );
 }

