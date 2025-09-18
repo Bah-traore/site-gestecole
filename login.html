@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion - GestScolaire</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Feuilles de style du projet -->
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/commun.css">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
+  <link rel="manifest" href="assets/favicon/site.webmanifest">
+  <link rel="shortcut icon" href="assets/favicon/favicon.ico">
+  <style>
+    .login-hero {
+      min-height: calc(100vh - 76px);
+      display: flex;
+      align-items: center;
+      padding: 3rem 0;
+    }
+    .login-card {
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(13, 110, 253, 0.15);
+    }
+    .brand-lock {
+      width: 64px; height: 64px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #0d6efd, #28a745);
+      color: #fff; border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(13, 110, 253, 0.3);
+    }
+    .toggle-password-btn {
+      border: none; background: transparent; color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+  <div id="dynamic-background">
+    <div class="floating-education-elements" id="floating-elements"></div>
+  </div>
+
+  <nav class="navbar navbar-expand-lg shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold text-primary cyber-text" href="index.html">GestScolaire</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link cyber-text" href="index.html">Accueil</a></li>
+          <li class="nav-item"><a class="nav-link cyber-text" href="features.html">Fonctionnalités</a></li>
+          <li class="nav-item"><a class="nav-link cyber-text" href="contact.html">Équipe & Contact</a></li>
+          <li class="nav-item"><a class="nav-link active cyber-text" href="login.html">Connexion</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="login-hero text-dark">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+          <div class="login-card p-4 p-md-5">
+            <div class="text-center mb-4">
+              <div class="brand-lock mb-3"><i class="fas fa-lock fa-lg"></i></div>
+              <h1 class="h3 fw-bold mb-1">Connexion</h1>
+              <p class="text-muted mb-0">Connectez-vous avec votre compte Google pour nous aider à accroître notre impact !</p>
+            </div>
+
+            <form id="login-form" novalidate>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="exemple@domaine.com" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="password" class="form-label">Mot de passe</label>
+                <div class="input-group">
+                  <input type="password" id="password" name="password" class="form-control" placeholder="Votre mot de passe" required>
+                  <button class="input-group-text toggle-password-btn" id="toggle-password" type="button" aria-label="Afficher/Masquer le mot de passe" aria-pressed="false">
+                    <i class="fa-solid fa-eye-slash"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="1" id="remember">
+                  <label class="form-check-label" for="remember">Se souvenir de moi</label>
+                </div>
+                <a href="#" class="small text-decoration-none">Mot de passe oublié ?</a>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+            </form>
+
+            <div class="text-center mt-4">
+              <small class="text-muted">Besoin d'un compte ? Contactez l'administrateur de votre établissement.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="text-center">
+        <p class="mb-0 text-white-50">&copy; 2025 GestScolaire. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/auth.js"></script>
+</body>
+</html>
